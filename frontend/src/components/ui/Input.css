@@ -1,0 +1,18 @@
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.input {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: #2563eb;
+}
