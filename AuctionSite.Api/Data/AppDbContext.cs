@@ -10,17 +10,7 @@ public class AppDbContext : DbContext
     {
     }
 
+    public DbSet<Admin> Admins { get; set; }
     public DbSet<User> Users { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<User>().HasData(new User
-        {
-            Id = 1,
-            Name = "Test",
-            Email = "test@test.com",
-            Password = "test",
-            IsActive = true
-        });
-    }
 }
