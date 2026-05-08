@@ -21,7 +21,10 @@ export function LoginDrawer({
         X
       </button>
       {mode === 'login' ? (
-        <LoginForm onChangeToRegister={() => onChangeMode('register')} />
+        <LoginForm
+          onChangeToRegister={() => onChangeMode('register')}
+          onClose={onClose}
+        />
       ) : (
         <RegisterForm onChangeToLogin={() => onChangeMode('login')} />
       )}

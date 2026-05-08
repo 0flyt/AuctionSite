@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { useAuth } from '../context/AuthContext';
 
 interface LoginFormProps {
   onChangeToRegister: () => void;
+  onClose: () => void;
 }
 
-export function LoginForm({ onChangeToRegister }: LoginFormProps) {
+export function LoginForm({ onChangeToRegister, onClose }: LoginFormProps) {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +23,8 @@ export function LoginForm({ onChangeToRegister }: LoginFormProps) {
 
     if (response.ok) {
       const data = await response.json();
-      localStorage.setItem('token', data.token);
+      login(data.token, data.user);
+      onClose();
     } else {
       setError('Felaktig e-post eller lösenord');
     }

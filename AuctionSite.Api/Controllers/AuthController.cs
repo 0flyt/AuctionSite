@@ -49,16 +49,19 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login(LoginRequestDto dto)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
         {
             return Unauthorized("Felaktig e-post eller lösenord.");
         }
+
         if (!user.IsActive)
         {
             return Unauthorized("Kontot är utloggat.");
         }
+
         var token = GenerateToken(user);
-        return Ok(new {token});
+        return Ok(new { token, user = new UserResponseDto { Id = user.Id, Username = user.Username, Email = user.Email } });
     }
 
     private object GenerateToken(User user)
