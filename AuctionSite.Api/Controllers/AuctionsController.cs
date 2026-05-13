@@ -39,7 +39,8 @@ public class AuctionsController : ControllerBase
             EndDate = a.EndDate,
             IsActive = a.IsActive,
             UserId = a.UserId,
-            Username = a.User.Username
+            Username = a.User.Username,
+            HighestBid = null
 
         }).ToListAsync();
 
