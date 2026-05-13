@@ -2,7 +2,7 @@ import './Input.css';
 
 interface InputProps {
   label: string;
-  type?: 'text' | 'email' | 'password';
+  type?: 'text' | 'email' | 'password' | 'datetime-local';
   value?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

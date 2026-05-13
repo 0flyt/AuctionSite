@@ -1,14 +1,18 @@
 import './Header.css';
 import { Button } from './ui/Button';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   onLoginClick: () => void;
   onRegisterClick: () => void;
+  // onCreateAuctionClick: () => void;
 }
 
 export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
   const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="header-container">
@@ -27,6 +31,12 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
               variant="secondary"
               type="button"
               onClick={logout}
+            />
+            <Button
+              label="Ny annons"
+              variant="primary"
+              type="button"
+              onClick={() => navigate('/skapa-annons')}
             />
           </>
         ) : (

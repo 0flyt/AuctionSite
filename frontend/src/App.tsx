@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Header } from './components/Header';
 import { LoginDrawer } from './pages/LoginDrawer';
+import { Route, Routes } from 'react-router-dom';
+import { Home } from './pages/Home';
+import { CreateAuction } from './pages/CreateAuction';
 
 // interface User {
 //   id: number;
@@ -37,6 +40,10 @@ function App() {
         mode={mode}
         onChangeMode={setMode}
       />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/skapa-annons" element={<CreateAuction />} />
+      </Routes>
     </div>
   );
 }

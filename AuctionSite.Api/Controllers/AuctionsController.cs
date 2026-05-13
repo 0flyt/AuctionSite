@@ -35,7 +35,7 @@ public class AuctionsController : ControllerBase
             Title = a.Title,
             Description = a.Description,
             StartingPrice = a.StartingPrice,
-            StartDate = a.StartDate,
+            StartDate = DateTime.UtcNow,
             EndDate = a.EndDate,
             IsActive = a.IsActive,
             UserId = a.UserId,
@@ -57,7 +57,7 @@ public class AuctionsController : ControllerBase
             Title = dto.Title,
             Description = dto.Description,
             StartingPrice = dto.StartingPrice,
-            StartDate = dto.StartDate,
+            StartDate = DateTime.UtcNow,
             EndDate = dto.EndDate,
             UserId = userId
         };
