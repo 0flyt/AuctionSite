@@ -22,6 +22,13 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(b => b.UserId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Admin>().HasData(new Admin
+        {
+            Id = 1,
+            Email = "admin@admin.com",
+            Password = "$2a$11$GB122J205i0VVKNnI9g9COBwTu6XHaEZkEdcqwyeus8X0DKhS6EK2"
+        });
     }
 
 }

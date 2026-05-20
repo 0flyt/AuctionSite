@@ -5,6 +5,8 @@ import { Route, Routes } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { CreateAuction } from './pages/CreateAuction';
 import { AuctionDetail } from './pages/AuctionDetail';
+import { UserProfile } from './pages/UserProfile';
+import { Admin } from './pages/Admin';
 
 // interface User {
 //   id: number;
@@ -45,6 +47,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/skapa-annons" element={<CreateAuction />} />
         <Route path="/auktion/:id" element={<AuctionDetail />} />
+        <Route path="/account" element={<UserProfile />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </div>
   );

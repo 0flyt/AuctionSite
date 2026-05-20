@@ -6,12 +6,16 @@ import { useNavigate } from 'react-router-dom';
 interface HeaderProps {
   onLoginClick: () => void;
   onRegisterClick: () => void;
-  // onCreateAuctionClick: () => void;
 }
 
 export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+
+  const handleAccountClick = () => {
+    if (isAdmin) navigate('/admin');
+    else navigate('/account');
+  };
 
   return (
     <>
@@ -20,7 +24,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
         <input />
         {isAuthenticated ? (
           <>
-            <span className="header-user">
+            <span className="header-user" onClick={handleAccountClick}>
               <span className="header-user-avatar">
                 {user?.username.charAt(0).toUpperCase()}
               </span>

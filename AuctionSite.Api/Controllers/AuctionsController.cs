@@ -106,4 +106,19 @@ public class AuctionsController : ControllerBase
             Username = user?.Username ?? ""
         });
     }
+
+    [HttpPatch("{id}/deactivate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeactivateAuction(int id)
+    {
+        var auction = await _context.Auctions.FindAsync(id);
+
+        if (auction == null) return NotFound();
+
+        auction.IsActive = !auction.IsActive;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { isActive = auction.IsActive });
+    }
 }

@@ -1,0 +1,92 @@
+.admin-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.admin-tab {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #777;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.admin-tab.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  font-weight: 600;
+}
+
+.admin-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-search-input {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.admin-search-input:focus {
+  border-color: #2563eb;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 2px solid #e0e0e0;
+  font-weight: 600;
+}
+
+.admin-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.status-active {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.status-inactive {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.admin-empty {
+  color: #999;
+  font-size: 0.9rem;
+}
