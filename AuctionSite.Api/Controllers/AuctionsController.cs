@@ -35,16 +35,41 @@ public class AuctionsController : ControllerBase
             Title = a.Title,
             Description = a.Description,
             StartingPrice = a.StartingPrice,
-            StartDate = DateTime.UtcNow,
+            StartDate = a.StartDate,
             EndDate = a.EndDate,
             IsActive = a.IsActive,
             UserId = a.UserId,
             Username = a.User.Username,
-            HighestBid = null
+            HighestBid = a.Bids.Any() ? a.Bids.Max(b => b.Amount) : (decimal?)null
 
         }).ToListAsync();
 
         return Ok(auctions);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAuction(int id)
+    {
+        var auction = await _context.Auctions
+            .Include(a => a.User)
+            .Include(a => a.Bids)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (auction == null) return NotFound();
+
+        return Ok(new AuctionResponseDto
+        {
+            Id = auction.Id,
+            Title = auction.Title,
+            Description = auction.Description,
+            StartingPrice = auction.StartingPrice,
+            StartDate = auction.StartDate,
+            EndDate = auction.EndDate,
+            IsActive = auction.IsActive,
+            UserId = auction.UserId,
+            Username = auction.User.Username,
+            HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : (decimal?)null
+        });
     }
 
     [HttpPost]

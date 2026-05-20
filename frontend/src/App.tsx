@@ -4,6 +4,7 @@ import { LoginDrawer } from './pages/LoginDrawer';
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { CreateAuction } from './pages/CreateAuction';
+import { AuctionDetail } from './pages/AuctionDetail';
 
 // interface User {
 //   id: number;
@@ -43,7 +44,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/skapa-annons" element={<CreateAuction />} />
-        {/* <Route path="/auktion/:id" element={<AuctionDetail />} /> */}
+        <Route path="/auktion/:id" element={<AuctionDetail />} />
       </Routes>
     </div>
   );

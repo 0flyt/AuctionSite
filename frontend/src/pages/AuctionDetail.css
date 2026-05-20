@@ -1,0 +1,108 @@
+.detail-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.detail-image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.detail-description h3,
+.detail-bids h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.detail-description {
+  margin-bottom: 2rem;
+}
+
+.detail-bid-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+}
+
+.detail-empty {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.detail-right {
+  position: sticky;
+  top: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-seller {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.detail-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.detail-ends {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.detail-price-label {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 0.5rem;
+}
+
+.detail-price {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.detail-bid-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.detail-bid-input {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.detail-bid-input:focus {
+  border-color: #2563eb;
+}
+
+.detail-owner-note,
+.detail-login-note {
+  font-size: 0.85rem;
+  color: #999;
+  margin-top: 0.5rem;
+}

@@ -11,4 +11,5 @@ public class Auction
     public bool IsActive { get; set; } = true;
     public int UserId { get; set; }
     public User User { get; set; } = null!;
+    public ICollection<Bid> Bids { get; set; } = new List<Bid>();
 }
