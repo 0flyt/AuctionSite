@@ -1,3 +1,9 @@
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .input-label {
   font-size: 0.875rem;
   font-weight: 500;
@@ -6,13 +12,20 @@
 
 .input {
   padding: 0.625rem 0.75rem;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   font-size: 1rem;
   outline: none;
   transition: border-color 0.2s;
+  width: 100%;
 }
 
 .input:focus {
-  border-color: #2563eb;
+  border-color: var(--color-primary);
+}
+
+.input:disabled {
+  background: var(--color-background);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
 }

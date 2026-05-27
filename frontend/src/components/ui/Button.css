@@ -8,19 +8,19 @@
 }
 
 .btn-primary {
-  background-color: #2563eb;
-  color: #ffffff;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
+  background-color: var(--color-primary-hover);
 }
 
 .btn-secondary {
-  background-color: #f0f0f0;
-  color: #213547;
+  background-color: var(--color-secondary);
+  color: var(--color-text);
 }
 
 .btn-secondary:hover {
-  background-color: #e0e0e0;
+  background-color: var(--color-secondary-hover);
 }

@@ -12,8 +12,7 @@
 
 .admin-tabs {
   display: flex;
-  gap: 0;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid var(--color-border);
   margin-bottom: 1.5rem;
 }
 
@@ -23,14 +22,15 @@
   background: none;
   font-size: 1rem;
   cursor: pointer;
-  color: #777;
+  color: var(--color-text-muted);
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
+  white-space: nowrap;
 }
 
 .admin-tab.active {
-  color: #2563eb;
-  border-bottom-color: #2563eb;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -48,27 +48,33 @@
 .admin-search-input {
   flex: 1;
   padding: 0.625rem 0.75rem;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   font-size: 1rem;
   outline: none;
 }
 
 .admin-search-input:focus {
-  border-color: #2563eb;
+  border-color: var(--color-primary);
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  min-width: 500px;
 }
 
 .admin-table th {
   text-align: left;
   padding: 0.75rem;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid var(--color-border);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .admin-table td {
@@ -77,16 +83,23 @@
 }
 
 .status-active {
-  color: #16a34a;
+  color: var(--color-success);
   font-weight: 500;
 }
 
 .status-inactive {
-  color: #dc2626;
+  color: var(--color-error);
   font-weight: 500;
 }
 
 .admin-empty {
-  color: #999;
+  color: var(--color-text-light);
   font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .admin-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
 }

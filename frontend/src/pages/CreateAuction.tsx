@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import './CreateAuction.css';
 
 export function CreateAuction() {
   const { token } = useAuth();
@@ -45,11 +46,14 @@ export function CreateAuction() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <label>Beskrivning</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div className="input-field">
+          <label className="input-label">Beskrivning</label>
+          <textarea
+            className="create-auction-textarea"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
         <Input
           label="Utropspris"
           type="text"

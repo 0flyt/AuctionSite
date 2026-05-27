@@ -99,39 +99,41 @@ export function Admin() {
           {users.length === 0 ? (
             <p className="admin-empty">Sök efter en användare ovan.</p>
           ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Användarnamn</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                  <th>Åtgärd</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                    <td
-                      className={
-                        user.isActive ? 'status-active' : 'status-inactive'
-                      }
-                    >
-                      {user.isActive ? 'Aktiv' : 'Inaktiv'}
-                    </td>
-                    <td>
-                      <Button
-                        label={user.isActive ? 'Inaktivera' : 'Aktivera'}
-                        variant={user.isActive ? 'secondary' : 'primary'}
-                        type="button"
-                        onClick={() => toggleUser(user.id)}
-                      />
-                    </td>
+            <div className="admin-table-wrapper">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Användarnamn</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Åtgärd</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.username}</td>
+                      <td>{user.email}</td>
+                      <td
+                        className={
+                          user.isActive ? 'status-active' : 'status-inactive'
+                        }
+                      >
+                        {user.isActive ? 'Aktiv' : 'Inaktiv'}
+                      </td>
+                      <td>
+                        <Button
+                          label={user.isActive ? 'Inaktivera' : 'Aktivera'}
+                          variant={user.isActive ? 'secondary' : 'primary'}
+                          type="button"
+                          onClick={() => toggleUser(user.id)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
