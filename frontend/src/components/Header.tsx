@@ -26,7 +26,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
           <>
             <span className="header-user" onClick={handleAccountClick}>
               <span className="header-user-avatar">
-                {user?.username.charAt(0).toUpperCase()}
+                {user?.username?.charAt(0).toUpperCase()}
               </span>
               Konto
             </span>

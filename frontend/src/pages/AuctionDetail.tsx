@@ -74,6 +74,28 @@ export function AuctionDetail() {
   const currentPrice = auction.highestBid ?? auction.startingPrice;
   const isOpen = new Date(auction.endDate) > new Date();
 
+  const myLatestBid =
+    bids.length > 0 && bids[0].username === user?.username ? bids[0] : null;
+
+  const handleDeleteBid = async () => {
+    if (!myLatestBid) return;
+    const response = await fetch(
+      `https://localhost:7211/api/auctions/${id}/bids/${myLatestBid.id}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+
+    if (response.ok) {
+      const updatedBids = bids.slice(1);
+      setBids(updatedBids);
+      setAuction((prev) =>
+        prev ? { ...prev, highestBid: updatedBids[0]?.amount ?? null } : prev,
+      );
+    }
+  };
+
   const formattedEndDate = new Date(auction.endDate).toLocaleDateString(
     'sv-SE',
     {
@@ -163,6 +185,15 @@ export function AuctionDetail() {
             variant="secondary"
             type="button"
             onClick={() => navigate(`/auktion/${id}/redigera`)}
+          />
+        )}
+
+        {isOpen && myLatestBid && (
+          <Button
+            label="Ångra mitt bud"
+            variant="secondary"
+            type="button"
+            onClick={handleDeleteBid}
           />
         )}
 

@@ -76,4 +76,32 @@ public class BidsController : ControllerBase
             Username = (await _context.Users.FindAsync(userId))!.Username
         });
     }
+
+    [HttpDelete("{bidId}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteBid(int auctionId, int bidId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var auction = await _context.Auctions.FindAsync(auctionId);
+
+        if (auction == null || auction.EndDate <= DateTime.UtcNow)
+            return BadRequest("Auktionen är avslutad.");
+
+        var latestBid = await _context.Bids
+            .Where(b => b.AuctionId == auctionId)
+            .OrderByDescending(b => b.Amount)
+            .FirstOrDefaultAsync();
+
+        if (latestBid == null || latestBid.Id != bidId)
+            return BadRequest("Du kan bara ångra det senaste budet.");
+
+        if (latestBid.UserId != userId)
+            return Forbid();
+
+        _context.Bids.Remove(latestBid);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
 }
