@@ -15,17 +15,38 @@ interface Auction {
 export function Home() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [search, setSearch] = useState('');
+  const [closed, setClosed] = useState(false);
 
-  useEffect(() => {
-    fetch(
-      `https://localhost:7211/api/auctions${search ? `?title=${search}` : ''}`,
-    )
+  const handleSearch = () => {
+    const url = `https://localhost:7211/api/auctions?closed=${closed}${search ? `&title=${search}` : ''}`;
+    fetch(url)
       .then((res) => res.json())
       .then((data) => setAuctions(data));
-  }, [search]);
+  };
+
+  useEffect(() => {
+    const url = `https://localhost:7211/api/auctions?closed=${closed}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => setAuctions(data));
+  }, [closed]);
 
   return (
     <div className="home-container">
+      <div className="home-tabs">
+        <button
+          className={`home-tab ${!closed ? 'active' : ''}`}
+          onClick={() => setClosed(false)}
+        >
+          Öppna auktioner
+        </button>
+        <button
+          className={`home-tab ${closed ? 'active' : ''}`}
+          onClick={() => setClosed(true)}
+        >
+          Avslutade auktioner
+        </button>
+      </div>
       <div className="home-search">
         <input
           className="home-search-input"
@@ -33,7 +54,11 @@ export function Home() {
           placeholder="Sök efter auktioner..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
+        <button className="home-search-btn" onClick={handleSearch}>
+          Sök
+        </button>
       </div>
       <div className="auction-grid">
         {auctions.length === 0 ? (
@@ -46,6 +71,7 @@ export function Home() {
               title={auction.title}
               startingPrice={auction.startingPrice}
               endDate={auction.endDate}
+              username={auction.username}
               highestBid={auction.highestBid}
             />
           ))

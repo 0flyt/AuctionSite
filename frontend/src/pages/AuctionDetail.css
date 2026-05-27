@@ -70,15 +70,27 @@
   color: #999;
 }
 
+.detail-price-section {
+  margin-top: 0.5rem;
+}
+
 .detail-price-label {
   font-size: 0.85rem;
   color: #777;
-  margin-top: 0.5rem;
 }
 
 .detail-price {
   font-size: 2rem;
   font-weight: 700;
+}
+
+.detail-closed-msg {
+  font-size: 0.95rem;
+  color: #e6a817;
+  font-weight: 500;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .detail-bid-form {

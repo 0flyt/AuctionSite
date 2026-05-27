@@ -21,11 +21,17 @@ public class AuctionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAuctions([FromQuery] string? title)
+    public async Task<IActionResult> GetAuctions([FromQuery] string? title, [FromQuery] bool closed = false)
     {
         var query = _context.Auctions
             .Include(a => a.User)
-            .Where(a => a.IsActive && a.EndDate > DateTime.UtcNow);
+            .Include(a => a.Bids)
+            .Where(a => a.IsActive);
+
+        if (closed)
+            query = query.Where(a => a.EndDate <= DateTime.UtcNow);
+        else
+            query = query.Where(a => a.EndDate > DateTime.UtcNow);
 
         if (!string.IsNullOrEmpty(title)) query = query.Where(a => a.Title.Contains(title));
 
@@ -120,5 +126,45 @@ public class AuctionsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(new { isActive = auction.IsActive });
+    }
+
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateAuction(int id, UpdateAuctionDto dto)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var auction = await _context.Auctions
+            .Include(a => a.Bids)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (auction == null)
+            return NotFound();
+
+        if (auction.UserId != userId)
+            return Forbid();
+
+        auction.Title = dto.Title;
+        auction.Description = dto.Description;
+        auction.EndDate = dto.EndDate;
+
+        if (!auction.Bids.Any())
+            auction.StartingPrice = dto.StartingPrice;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new AuctionResponseDto
+        {
+            Id = auction.Id,
+            Title = auction.Title,
+            Description = auction.Description,
+            StartingPrice = auction.StartingPrice,
+            StartDate = auction.StartDate,
+            EndDate = auction.EndDate,
+            IsActive = auction.IsActive,
+            UserId = auction.UserId,
+            Username = (await _context.Users.FindAsync(userId))!.Username,
+            HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : null
+        });
     }
 }

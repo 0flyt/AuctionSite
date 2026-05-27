@@ -7,6 +7,7 @@ import { CreateAuction } from './pages/CreateAuction';
 import { AuctionDetail } from './pages/AuctionDetail';
 import { UserProfile } from './pages/UserProfile';
 import { Admin } from './pages/Admin';
+import { EditAuction } from './pages/EditAuction';
 
 // interface User {
 //   id: number;
@@ -49,6 +50,7 @@ function App() {
         <Route path="/auktion/:id" element={<AuctionDetail />} />
         <Route path="/account" element={<UserProfile />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/auktion/:id/redigera" element={<EditAuction />} />
       </Routes>
     </div>
   );

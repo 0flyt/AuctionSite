@@ -7,6 +7,7 @@ interface AuctionCardProps {
   startingPrice: number;
   endDate: string;
   highestBid?: number | null;
+  username: string;
 }
 
 export function AuctionCard({
@@ -15,6 +16,7 @@ export function AuctionCard({
   startingPrice,
   endDate,
   highestBid,
+  username,
 }: AuctionCardProps) {
   const navigate = useNavigate();
 
@@ -32,6 +34,7 @@ export function AuctionCard({
       </div>
       <div className="auction-card-body">
         <h3 className="auction-card-title">{title}</h3>
+        <p className="auction-card-seller">{username}</p>
         <p className="auction-card-date">{formattedDate}</p>
         <div className="auction-card-price-row">
           <span className="auction-card-price">

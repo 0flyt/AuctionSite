@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
 import './AuctionDetail.css';
@@ -29,6 +29,7 @@ export function AuctionDetail() {
   const [bids, setBids] = useState<Bid[]>([]);
   const [bidAmount, setBidAmount] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`https://localhost:7211/api/auctions/${id}`)
@@ -71,6 +72,17 @@ export function AuctionDetail() {
 
   const isOwner = user?.id === auction.userId;
   const currentPrice = auction.highestBid ?? auction.startingPrice;
+  const isOpen = new Date(auction.endDate) > new Date();
+
+  const formattedEndDate = new Date(auction.endDate).toLocaleDateString(
+    'sv-SE',
+    {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    },
+  );
 
   return (
     <div className="detail-container">
@@ -80,42 +92,50 @@ export function AuctionDetail() {
           <h3>Beskrivning</h3>
           <p>{auction.description}</p>
         </div>
-        <div className="detail-bids">
-          <h3>Budhistorik</h3>
-          {bids.length === 0 ? (
-            <p className="detail-empty">Inga bud ännu.</p>
-          ) : (
-            bids.map((bid) => (
-              <div key={bid.id} className="detail-bid-row">
-                <span>{bid.username}</span>
-                <span>{bid.amount} kr</span>
-                <span>
-                  {new Date(bid.placedAt).toLocaleDateString('sv-SE')}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
+
+        {isOpen && (
+          <div className="detail-bids">
+            <h3>Budhistorik</h3>
+            {bids.length === 0 ? (
+              <p className="detail-empty">Inga bud ännu.</p>
+            ) : (
+              bids.map((bid) => (
+                <div key={bid.id} className="detail-bid-row">
+                  <span>{bid.username}</span>
+                  <span>{bid.amount} kr</span>
+                  <span>
+                    {new Date(bid.placedAt).toLocaleDateString('sv-SE')}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       <div className="detail-right">
         <p className="detail-seller">{auction.username}</p>
         <h1 className="detail-title">{auction.title}</h1>
         <p className="detail-ends">
-          Slutar{' '}
-          {new Date(auction.endDate).toLocaleDateString('sv-SE', {
-            day: 'numeric',
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+          {isOpen ? 'Slutar' : 'Avslutad'} {formattedEndDate}
         </p>
-        <p className="detail-price-label">
-          {auction.highestBid ? 'Ledande bud' : 'Utropspris'}
-        </p>
-        <p className="detail-price">{currentPrice} kr</p>
 
-        {!isOwner && token && (
+        <div className="detail-price-section">
+          <p className="detail-price-label">
+            Utropspris · {bids.length} {bids.length === 1 ? 'bud' : 'bud'}
+          </p>
+          <p className="detail-price">{currentPrice} kr</p>
+        </div>
+
+        {!isOpen && (
+          <p className="detail-closed-msg">
+            {bids.length === 0
+              ? 'Auktionen avslutades utan bud'
+              : `Vinnare: ${bids[0].username} med ${bids[0].amount} kr`}
+          </p>
+        )}
+
+        {isOpen && !isOwner && token && (
           <div className="detail-bid-form">
             <input
               className="detail-bid-input"
@@ -134,9 +154,19 @@ export function AuctionDetail() {
           </div>
         )}
 
-        {isOwner && <p className="detail-owner-note">Detta är din auktion.</p>}
+        {isOpen && isOwner && (
+          <p className="detail-owner-note">Detta är din auktion.</p>
+        )}
+        {isOpen && isOwner && (
+          <Button
+            label="Redigera annons"
+            variant="secondary"
+            type="button"
+            onClick={() => navigate(`/auktion/${id}/redigera`)}
+          />
+        )}
 
-        {!token && (
+        {isOpen && !token && (
           <p className="detail-login-note">Logga in för att lägga bud.</p>
         )}
       </div>
