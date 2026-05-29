@@ -10,6 +10,7 @@ interface Auction {
   endDate: string;
   username: string;
   highestBid?: number | null;
+  imageUrl: string | null;
 }
 
 export function Home() {
@@ -73,6 +74,7 @@ export function Home() {
               endDate={auction.endDate}
               username={auction.username}
               highestBid={auction.highestBid}
+              imageUrl={auction.imageUrl}
             />
           ))
         )}

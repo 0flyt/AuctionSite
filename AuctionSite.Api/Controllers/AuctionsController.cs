@@ -46,7 +46,8 @@ public class AuctionsController : ControllerBase
             IsActive = a.IsActive,
             UserId = a.UserId,
             Username = a.User.Username,
-            HighestBid = a.Bids.Any() ? a.Bids.Max(b => b.Amount) : (decimal?)null
+            HighestBid = a.Bids.Any() ? a.Bids.Max(b => b.Amount) : (decimal?)null,
+            ImageUrl = a.ImageUrl
 
         }).ToListAsync();
 
@@ -74,7 +75,8 @@ public class AuctionsController : ControllerBase
             IsActive = auction.IsActive,
             UserId = auction.UserId,
             Username = auction.User.Username,
-            HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : (decimal?)null
+            HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : (decimal?)null,
+            ImageUrl = auction.ImageUrl
         });
     }
 
@@ -166,5 +168,32 @@ public class AuctionsController : ControllerBase
             Username = (await _context.Users.FindAsync(userId))!.Username,
             HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : null
         });
+    }
+
+    [HttpPost("{id}/image")]
+    [Authorize]
+    public async Task<IActionResult> UploadImage(int id, IFormFile image)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var auction = await _context.Auctions.FindAsync(id);
+
+        if (auction == null) return NotFound();
+        if (auction.UserId != userId) return Forbid();
+
+        var uploadsFolder = Path.Combine("wwwroot", "images");
+        Directory.CreateDirectory(uploadsFolder);
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await image.CopyToAsync(stream);
+        }
+
+        auction.ImageUrl = $"/images/{fileName}";
+        await _context.SaveChangesAsync();
+
+        return Ok(new { imageUrl = auction.ImageUrl });
     }
 }

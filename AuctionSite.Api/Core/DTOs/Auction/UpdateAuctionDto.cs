@@ -6,4 +6,5 @@ public class UpdateAuctionDto
     public string Description { get; set; } = string.Empty;
     public decimal StartingPrice { get; set; }
     public DateTime EndDate { get; set; }
+    public string? ImageUrl { get; set; }
 }

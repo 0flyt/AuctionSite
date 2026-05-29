@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
 import './AuctionDetail.css';
+import { ImageModal } from '../components/ImageModal';
 
 interface Auction {
   id: number;
@@ -13,6 +14,7 @@ interface Auction {
   username: string;
   userId: number;
   highestBid: number | null;
+  imageUrl?: string | null;
 }
 
 interface Bid {
@@ -30,6 +32,7 @@ export function AuctionDetail() {
   const [bidAmount, setBidAmount] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetch(`https://localhost:7211/api/auctions/${id}`)
@@ -131,7 +134,27 @@ export function AuctionDetail() {
   return (
     <div className="detail-container">
       <div className="detail-left">
-        <div className="detail-image">Ingen bild</div>
+        <div className="detail-image">
+          {auction.imageUrl ? (
+            <img
+              src={`https://localhost:7211${auction.imageUrl}`}
+              alt={auction.title}
+              onClick={() => setShowModal(true)}
+              style={{ cursor: 'zoom-in' }}
+            />
+          ) : (
+            <span>Ingen bild</span>
+          )}
+        </div>
+
+        {showModal && auction.imageUrl && (
+          <ImageModal
+            imageUrl={`https://localhost:7211${auction.imageUrl}`}
+            alt={auction.title}
+            onClose={() => setShowModal(false)}
+          />
+        )}
+
         <div className="detail-description">
           <h3>Beskrivning</h3>
           <p>{auction.description}</p>

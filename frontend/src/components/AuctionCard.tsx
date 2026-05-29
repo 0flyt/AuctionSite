@@ -8,6 +8,7 @@ interface AuctionCardProps {
   endDate: string;
   highestBid?: number | null;
   username: string;
+  imageUrl: string | null;
 }
 
 export function AuctionCard({
@@ -17,6 +18,7 @@ export function AuctionCard({
   endDate,
   highestBid,
   username,
+  imageUrl,
 }: AuctionCardProps) {
   const navigate = useNavigate();
 
@@ -30,7 +32,11 @@ export function AuctionCard({
   return (
     <div className="auction-card" onClick={() => navigate(`/auktion/${id}`)}>
       <div className="auction-card-image">
-        <span>Ingen bild</span>
+        {imageUrl ? (
+          <img src={`https://localhost:7211${imageUrl}`} alt={title} />
+        ) : (
+          <span>Ingen bild</span>
+        )}
       </div>
       <div className="auction-card-body">
         <h3 className="auction-card-title">{title}</h3>

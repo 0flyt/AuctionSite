@@ -12,4 +12,5 @@ public class AuctionResponseDto
     public int UserId { get; set; }
     public string Username { get; set; } = string.Empty;
     public decimal? HighestBid { get; set; }
+    public string? ImageUrl { get; set; }
 }

@@ -13,6 +13,7 @@ export function CreateAuction() {
   const [startingPrice, setStartingPrice] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
+  const [image, setImage] = useState<File | null>(null);
 
   const handleSubmit = async () => {
     setError('');
@@ -58,6 +59,18 @@ export function CreateAuction() {
     });
 
     if (response.ok) {
+      const data = await response.json();
+
+      if (image) {
+        const formData = new FormData();
+        formData.append('file', image);
+        await fetch(`https://localhost:7211/api/auctions/${data.id}/image`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+      }
+
       navigate('/');
     } else {
       setError('Något gick fel, försök igen');
@@ -68,6 +81,14 @@ export function CreateAuction() {
     <div className="create-auction-container">
       <h1>Ny annons</h1>
       <div className="create-auction-form">
+        <div className="input-field">
+          <label className="input-label">Bild</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+          />
+        </div>
         <Input
           label="Rubrik"
           type="text"
