@@ -22,7 +22,7 @@ export function AuctionCard({
 }: AuctionCardProps) {
   const navigate = useNavigate();
 
-  const formattedDate = new Date(endDate).toLocaleDateString('sv-SE', {
+  const formattedDate = new Date(endDate + 'Z').toLocaleDateString('sv-SE', {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',

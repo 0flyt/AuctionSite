@@ -97,7 +97,7 @@ export function AuctionDetail() {
 
   const isOwner = user?.id === auction.userId;
   const currentPrice = auction.highestBid ?? auction.startingPrice;
-  const isOpen = new Date(auction.endDate) > new Date();
+  const isOpen = new Date(auction.endDate + 'Z') > new Date();
 
   const myLatestBid =
     bids.length > 0 && bids[0].username === user?.username ? bids[0] : null;
@@ -121,7 +121,7 @@ export function AuctionDetail() {
     }
   };
 
-  const formattedEndDate = new Date(auction.endDate).toLocaleDateString(
+  const formattedEndDate = new Date(auction.endDate + 'Z').toLocaleDateString(
     'sv-SE',
     {
       day: 'numeric',

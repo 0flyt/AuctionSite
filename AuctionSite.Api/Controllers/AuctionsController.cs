@@ -92,7 +92,7 @@ public class AuctionsController : ControllerBase
             Description = dto.Description,
             StartingPrice = dto.StartingPrice,
             StartDate = DateTime.UtcNow,
-            EndDate = dto.EndDate,
+            EndDate = dto.EndDate.ToUniversalTime(),
             UserId = userId
         };
 
@@ -148,7 +148,7 @@ public class AuctionsController : ControllerBase
 
         auction.Title = dto.Title;
         auction.Description = dto.Description;
-        auction.EndDate = dto.EndDate;
+        auction.EndDate = dto.EndDate.ToUniversalTime();
 
         if (!auction.Bids.Any())
             auction.StartingPrice = dto.StartingPrice;
