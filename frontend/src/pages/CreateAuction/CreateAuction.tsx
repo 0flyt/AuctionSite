@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { useAuth } from '../../context/AuthContext';
+import { Button } from '../../components/ui/Button/Button';
+import { Input } from '../../components/ui/Input/Input';
+import { auctionService } from '../../services/auctionService';
 import './CreateAuction.css';
 
 export function CreateAuction() {
@@ -22,58 +23,33 @@ export function CreateAuction() {
       setError('Rubrik måste fyllas i.');
       return;
     }
-
     if (!description.trim()) {
       setError('Beskrivning måste fyllas i.');
       return;
     }
-
-    const price = parseFloat(startingPrice);
-    if (isNaN(price) || price <= 0) {
+    if (isNaN(parseFloat(startingPrice)) || parseFloat(startingPrice) <= 0) {
       setError('Ange ett giltigt utropspris.');
       return;
     }
-
     if (!endDate) {
       setError('Slutdatum måste fyllas i.');
       return;
     }
-
     if (new Date(endDate) <= new Date()) {
       setError('Slutdatum måste vara i framtiden.');
       return;
     }
 
-    const response = await fetch('https://localhost:7211/api/auctions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        startingPrice: parseFloat(startingPrice),
-        endDate,
-      }),
-    });
+    const { ok, data } = await auctionService.createAuction(
+      { title, description, startingPrice: parseFloat(startingPrice), endDate },
+      token!,
+    );
 
-    if (response.ok) {
-      const data = await response.json();
-
-      if (image) {
-        const formData = new FormData();
-        formData.append('file', image);
-        await fetch(`https://localhost:7211/api/auctions/${data.id}/image`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        });
-      }
-
+    if (ok) {
+      if (image) await auctionService.uploadImage(data.id, image, token!);
       navigate('/');
     } else {
-      setError('Något gick fel, försök igen');
+      setError('Något gick fel, försök igen.');
     }
   };
 

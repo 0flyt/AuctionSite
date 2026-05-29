@@ -1,30 +1,17 @@
 import { useState } from 'react';
-import { Header } from './components/Header';
-import { LoginDrawer } from './pages/LoginDrawer';
+import { Header } from './components/Header/Header';
+import { LoginDrawer } from './pages/LoginDrawer/LoginDrawer';
 import { Route, Routes } from 'react-router-dom';
-import { Home } from './pages/Home';
-import { CreateAuction } from './pages/CreateAuction';
-import { AuctionDetail } from './pages/AuctionDetail';
-import { UserProfile } from './pages/UserProfile';
-import { Admin } from './pages/Admin';
-import { EditAuction } from './pages/EditAuction';
-
-// interface User {
-//   id: number;
-//   name: string;
-//   email: string;
-// }
+import { Home } from './pages/Home/Home';
+import { CreateAuction } from './pages/CreateAuction/CreateAuction';
+import { AuctionDetail } from './pages/AuctionDetails/AuctionDetail';
+import { UserProfile } from './pages/UserProfile/UserProfile';
+import { Admin } from './pages/Admin/Admin';
+import { EditAuction } from './pages/EditAuction/EditAuction';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  // const [users, setUsers] = useState<User[]>([]);
-
-  // useEffect(() => {
-  //   fetch('https://localhost:7211/api/users')
-  //     .then((res) => res.json())
-  //     .then((data) => setUsers(data));
-  // }, []);
 
   return (
     <div>

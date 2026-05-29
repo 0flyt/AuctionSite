@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/Button';
+import { useAuth } from '../../context/AuthContext';
+import { Button } from '../../components/ui/Button/Button';
+import { userService } from '../../services/userService';
 import './Admin.css';
 
 interface AdminUser {
@@ -27,35 +28,24 @@ export function Admin() {
   const [auctionSearch, setAuctionSearch] = useState('');
 
   const fetchUsers = async () => {
-    const res = await fetch(
-      `https://localhost:7211/api/users${userSearch ? `?username=${userSearch}` : ''}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    const data = await res.json();
+    const data = await userService.searchUsers(userSearch, token!);
     setUsers(data);
   };
 
   const fetchAuctions = async () => {
-    const res = await fetch(
-      `https://localhost:7211/api/auctions${auctionSearch ? `?title=${auctionSearch}` : ''}`,
-    );
+    const url = `https://localhost:7211/api/auctions${auctionSearch ? `?title=${auctionSearch}` : ''}`;
+    const res = await fetch(url);
     const data = await res.json();
     setAuctions(data);
   };
 
-  const toggleUser = async (id: number) => {
-    await fetch(`https://localhost:7211/api/users/${id}/deactivate`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const handleToggleUser = async (id: number) => {
+    await userService.toggleUser(id, token!);
     fetchUsers();
   };
 
-  const toggleAuction = async (id: number) => {
-    await fetch(`https://localhost:7211/api/auctions/${id}/deactivate`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const handleToggleAuction = async (id: number) => {
+    await userService.toggleAuction(id, token!);
     fetchAuctions();
   };
 
@@ -126,7 +116,7 @@ export function Admin() {
                           label={user.isActive ? 'Inaktivera' : 'Aktivera'}
                           variant={user.isActive ? 'secondary' : 'primary'}
                           type="button"
-                          onClick={() => toggleUser(user.id)}
+                          onClick={() => handleToggleUser(user.id)}
                         />
                       </td>
                     </tr>
@@ -187,7 +177,7 @@ export function Admin() {
                         label={auction.isActive ? 'Inaktivera' : 'Aktivera'}
                         variant={auction.isActive ? 'secondary' : 'primary'}
                         type="button"
-                        onClick={() => toggleAuction(auction.id)}
+                        onClick={() => handleToggleAuction(auction.id)}
                       />
                     </td>
                   </tr>

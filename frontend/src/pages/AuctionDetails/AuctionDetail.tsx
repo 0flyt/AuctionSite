@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/Button';
+import { useAuth } from '../../context/AuthContext';
+import { Button } from '../../components/ui/Button/Button';
+import { ImageModal } from '../../components/ImageModal/ImageModal';
+import { auctionService } from '../../services/auctionService';
+import { bidService } from '../../services/bidService';
 import './AuctionDetail.css';
-import { ImageModal } from '../components/ImageModal';
 
 interface Auction {
   id: number;
@@ -35,18 +37,13 @@ export function AuctionDetail() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetch(`https://localhost:7211/api/auctions/${id}`)
-      .then((res) => res.json())
-      .then((data) => setAuction(data));
-
-    fetch(`https://localhost:7211/api/auctions/${id}/bids`)
-      .then((res) => res.json())
-      .then((data) => setBids(data));
+    if (!id) return;
+    auctionService.getAuction(id).then(setAuction);
+    bidService.getBids(id).then(setBids);
   }, [id]);
 
   const handleBid = async () => {
     setError('');
-
     const amount = parseFloat(bidAmount);
 
     if (isNaN(amount) || amount <= 0) {
@@ -59,37 +56,29 @@ export function AuctionDetail() {
       return;
     }
 
-    const response = await fetch(
-      `https://localhost:7211/api/auctions/${id}/bids`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount: parseFloat(bidAmount) }),
-      },
-    );
+    const { ok, data } = await bidService.createBid(id!, amount, token!);
 
-    if (response.ok) {
-      const newBid = await response.json();
-      setBids([newBid, ...bids]);
+    if (ok) {
+      setBids([data, ...bids]);
       setAuction((prev) =>
-        prev ? { ...prev, highestBid: newBid.amount } : prev,
+        prev ? { ...prev, highestBid: data.amount } : prev,
       );
       setBidAmount('');
     } else {
-      try {
-        const data = await response.json();
-        if (data.errors) {
-          setError('Ange ett giltigt belopp.');
-        } else {
-          setError(data.title || 'Något gick fel.');
-        }
-      } catch {
-        const msg = await response.text();
-        setError(msg);
-      }
+      setError(typeof data === 'string' ? data : 'Något gick fel.');
+    }
+  };
+
+  const handleDeleteBid = async () => {
+    if (!myLatestBid) return;
+    const { ok } = await bidService.deleteBid(id!, myLatestBid.id, token!);
+
+    if (ok) {
+      const updatedBids = bids.slice(1);
+      setBids(updatedBids);
+      setAuction((prev) =>
+        prev ? { ...prev, highestBid: updatedBids[0]?.amount ?? null } : prev,
+      );
     }
   };
 
@@ -98,28 +87,8 @@ export function AuctionDetail() {
   const isOwner = user?.id === auction.userId;
   const currentPrice = auction.highestBid ?? auction.startingPrice;
   const isOpen = new Date(auction.endDate + 'Z') > new Date();
-
   const myLatestBid =
     bids.length > 0 && bids[0].username === user?.username ? bids[0] : null;
-
-  const handleDeleteBid = async () => {
-    if (!myLatestBid) return;
-    const response = await fetch(
-      `https://localhost:7211/api/auctions/${id}/bids/${myLatestBid.id}`,
-      {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
-
-    if (response.ok) {
-      const updatedBids = bids.slice(1);
-      setBids(updatedBids);
-      setAuction((prev) =>
-        prev ? { ...prev, highestBid: updatedBids[0]?.amount ?? null } : prev,
-      );
-    }
-  };
 
   const formattedEndDate = new Date(auction.endDate + 'Z').toLocaleDateString(
     'sv-SE',

@@ -4,7 +4,7 @@ import App from './App.tsx';
 import { AuthProvider } from './context/AuthContext.tsx';
 import { StrictMode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { ErrorBoundary } from './components/ErrorWrapper.tsx';
+import { ErrorBoundary } from './components/ErrorWrapper/ErrorWrapper.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

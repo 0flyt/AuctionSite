@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { useAuth } from '../context/AuthContext';
+import { Button } from '../ui/Button/Button';
+import { Input } from '../ui/Input/Input';
+import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../services/authService';
 
 interface LoginFormProps {
   onChangeToRegister: () => void;
@@ -26,20 +27,17 @@ export function LoginForm({ onChangeToRegister, onClose }: LoginFormProps) {
       setError('Lösenord måste fyllas i.');
       return;
     }
-    const response = await fetch('https://localhost:7211/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
 
-    if (response.ok) {
-      const data = await response.json();
+    const { ok, data, error } = await authService.login(email, password);
+
+    if (ok) {
       login(data.token, data.user);
       onClose();
     } else {
-      setError('Felaktig e-post eller lösenord');
+      setError(error || 'Felaktig e-post eller lösenord.');
     }
   };
+
   return (
     <>
       <h1>Logga in</h1>

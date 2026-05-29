@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { useAuth } from '../../context/AuthContext';
+import { Button } from '../../components/ui/Button/Button';
+import { Input } from '../../components/ui/Input/Input';
+import { userService } from '../../services/userService';
 import './UserProfile.css';
 
 export function UserProfile() {
@@ -16,31 +17,30 @@ export function UserProfile() {
     setError('');
     setSuccess('');
 
-    if (newPassword !== confirmPassword) {
-      setError('Lösenorden matchar inte');
+    if (newPassword.length < 6) {
+      setError('Lösenordet måste vara minst 6 tecken.');
       return;
     }
 
-    const response = await fetch(
-      `https://localhost:7211/api/users/${user?.id}/password`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      },
+    if (newPassword !== confirmPassword) {
+      setError('Lösenorden matchar inte.');
+      return;
+    }
+
+    const { ok, data } = await userService.updatePassword(
+      user!.id,
+      currentPassword,
+      newPassword,
+      token!,
     );
 
-    if (response.ok) {
+    if (ok) {
       setSuccess('Lösenordet är uppdaterat!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } else {
-      const msg = await response.text();
-      setError(msg);
+      setError(data || 'Något gick fel.');
     }
   };
 

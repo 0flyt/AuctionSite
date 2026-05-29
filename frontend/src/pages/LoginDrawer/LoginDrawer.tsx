@@ -1,6 +1,6 @@
 import './LoginDrawer.css';
-import { LoginForm } from '../components/LoginForm';
-import { RegisterForm } from '../components/RegisterForm';
+import { LoginForm } from '../../components/LoginForm/LoginForm';
+import { RegisterForm } from '../../components/RegisterForm/RegisterForm';
 
 interface LoginDrawerProps {
   isOpen: boolean;

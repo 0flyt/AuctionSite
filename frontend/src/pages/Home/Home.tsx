@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { AuctionCard } from '../components/AuctionCard';
+import { AuctionCard } from '../../components/AuctionCard/AuctionCard';
+import { auctionService } from '../../services/auctionService';
 import './Home.css';
 
 interface Auction {
@@ -18,19 +19,20 @@ export function Home() {
   const [search, setSearch] = useState('');
   const [closed, setClosed] = useState(false);
 
-  const handleSearch = () => {
-    const url = `https://localhost:7211/api/auctions?closed=${closed}${search ? `&title=${search}` : ''}`;
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => setAuctions(data));
+  const fetchAuctions = async (searchTerm?: string) => {
+    const data = await auctionService.getAuctions(searchTerm, closed);
+    setAuctions(data);
   };
 
   useEffect(() => {
-    const url = `https://localhost:7211/api/auctions?closed=${closed}`;
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => setAuctions(data));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchAuctions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [closed]);
+
+  const handleSearch = () => {
+    fetchAuctions(search);
+  };
 
   return (
     <div className="home-container">

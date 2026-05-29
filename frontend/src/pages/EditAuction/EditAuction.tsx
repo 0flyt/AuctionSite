@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import './CreateAuction.css';
+import { useAuth } from '../../context/AuthContext';
+import { Button } from '../../components/ui/Button/Button';
+import { Input } from '../../components/ui/Input/Input';
+import { auctionService } from '../../services/auctionService';
+import '../CreateAuction/CreateAuction.css';
 
 export function EditAuction() {
   const { id } = useParams();
@@ -15,39 +16,50 @@ export function EditAuction() {
   const [endDate, setEndDate] = useState('');
   const [hasBids, setHasBids] = useState(false);
   const [error, setError] = useState('');
+  const [image, setImage] = useState<File | null>(null);
 
   useEffect(() => {
-    fetch(`https://localhost:7211/api/auctions/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTitle(data.title);
-        setDescription(data.description);
-        setStartingPrice(data.startingPrice.toString());
-        setEndDate(data.endDate.slice(0, 16));
-        setHasBids(data.highestBid !== null);
-      });
+    if (!id) return;
+    auctionService.getAuction(id).then((data) => {
+      setTitle(data.title);
+      setDescription(data.description);
+      setStartingPrice(data.startingPrice.toString());
+      setEndDate(data.endDate.slice(0, 16));
+      setHasBids(data.highestBid !== null);
+    });
   }, [id]);
 
   const handleSubmit = async () => {
     setError('');
-    const response = await fetch(`https://localhost:7211/api/auctions/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        startingPrice: parseFloat(startingPrice),
-        endDate,
-      }),
-    });
 
-    if (response.ok) {
+    if (!title.trim()) {
+      setError('Rubrik måste fyllas i.');
+      return;
+    }
+    if (!description.trim()) {
+      setError('Beskrivning måste fyllas i.');
+      return;
+    }
+    if (!endDate) {
+      setError('Slutdatum måste fyllas i.');
+      return;
+    }
+    if (new Date(endDate) <= new Date()) {
+      setError('Slutdatum måste vara i framtiden.');
+      return;
+    }
+
+    const { ok } = await auctionService.updateAuction(
+      id!,
+      { title, description, startingPrice: parseFloat(startingPrice), endDate },
+      token!,
+    );
+
+    if (ok) {
+      if (image) await auctionService.uploadImage(parseInt(id!), image, token!);
       navigate(`/auktion/${id}`);
     } else {
-      setError('Något gick fel, försök igen');
+      setError('Något gick fel, försök igen.');
     }
   };
 
@@ -87,6 +99,14 @@ export function EditAuction() {
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
         />
+        <div className="input-field">
+          <label className="input-label">Byt bild (valfritt)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+          />
+        </div>
         {error && <p className="error-message">{error}</p>}
         <div className="create-auction-actions">
           <Button

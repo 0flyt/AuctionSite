@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { Button } from '../ui/Button/Button';
+import { Input } from '../ui/Input/Input';
+import { authService } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 interface RegisterFormProps {
   onChangeToLogin: () => void;
 }
 
 export function RegisterForm({ onChangeToLogin }: RegisterFormProps) {
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,16 +39,16 @@ export function RegisterForm({ onChangeToLogin }: RegisterFormProps) {
       return;
     }
 
-    const response = await fetch('https://localhost:7211/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-    });
+    const { ok, error } = await authService.register(username, email, password);
 
-    if (response.ok) {
+    if (ok) {
+      const loginResult = await authService.login(email, password);
+      if (loginResult.ok) {
+        login(loginResult.data.token, loginResult.data.user);
+      }
       onChangeToLogin();
     } else {
-      setError('Något gick fel, försök igen');
+      setError(error || 'Något gick fel, försök igen.');
     }
   };
 
