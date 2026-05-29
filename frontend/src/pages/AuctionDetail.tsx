@@ -213,6 +213,20 @@ export function AuctionDetail() {
                 const val = e.target.value;
                 if (val == '' || /^\d+$/.test(val)) setBidAmount(val);
               }}
+              onKeyDown={(e) => {
+                if (
+                  !/[\d\b]/.test(e.key) &&
+                  ![
+                    'Backspace',
+                    'Delete',
+                    'ArrowLeft',
+                    'ArrowRight',
+                    'Tab',
+                  ].includes(e.key)
+                ) {
+                  e.preventDefault();
+                }
+              }}
               min={currentPrice + 1}
               step="1"
             />

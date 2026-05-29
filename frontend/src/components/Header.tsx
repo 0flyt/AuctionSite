@@ -23,6 +23,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
+    navigate('/');
   };
 
   return (
