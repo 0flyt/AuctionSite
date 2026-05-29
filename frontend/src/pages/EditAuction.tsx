@@ -71,7 +71,7 @@ export function EditAuction() {
         </div>
         <Input
           label="Startpris (kr)"
-          type="text"
+          type="number"
           value={startingPrice}
           onChange={(e) => setStartingPrice(e.target.value)}
           disabled={hasBids}

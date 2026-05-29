@@ -15,6 +15,17 @@ export function LoginForm({ onChangeToRegister, onClose }: LoginFormProps) {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
+    setError('');
+
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Ange en giltig e-postadress.');
+      return;
+    }
+
+    if (!password.trim()) {
+      setError('Lösenord måste fyllas i.');
+      return;
+    }
     const response = await fetch('https://localhost:7211/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

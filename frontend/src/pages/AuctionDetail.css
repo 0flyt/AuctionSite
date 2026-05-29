@@ -36,6 +36,10 @@
   margin-bottom: 2rem;
 }
 
+.detail-description p {
+  white-space: pre-wrap;
+}
+
 .detail-bid-row {
   display: flex;
   justify-content: space-between;

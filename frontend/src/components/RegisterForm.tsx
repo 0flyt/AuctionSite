@@ -14,8 +14,25 @@ export function RegisterForm({ onChangeToLogin }: RegisterFormProps) {
   const [error, setError] = useState('');
 
   const handleRegister = async () => {
+    setError('');
+
+    if (!username.trim()) {
+      setError('Användarnamn måste fyllas i.');
+      return;
+    }
+
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Ange en giltig e-postadress.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Lösenordet måste vara minst 6 tecken.');
+      return;
+    }
+
     if (password !== passwordCheck) {
-      setError('Lösenorden matchar inte');
+      setError('Lösenorden matchar inte.');
       return;
     }
 

@@ -15,6 +15,34 @@ export function CreateAuction() {
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
+    setError('');
+
+    if (!title.trim()) {
+      setError('Rubrik måste fyllas i.');
+      return;
+    }
+
+    if (!description.trim()) {
+      setError('Beskrivning måste fyllas i.');
+      return;
+    }
+
+    const price = parseFloat(startingPrice);
+    if (isNaN(price) || price <= 0) {
+      setError('Ange ett giltigt utropspris.');
+      return;
+    }
+
+    if (!endDate) {
+      setError('Slutdatum måste fyllas i.');
+      return;
+    }
+
+    if (new Date(endDate) <= new Date()) {
+      setError('Slutdatum måste vara i framtiden.');
+      return;
+    }
+
     const response = await fetch('https://localhost:7211/api/auctions', {
       method: 'POST',
       headers: {
@@ -56,7 +84,7 @@ export function CreateAuction() {
         </div>
         <Input
           label="Utropspris"
-          type="text"
+          type="number"
           value={startingPrice}
           onChange={(e) => setStartingPrice(e.target.value)}
         />

@@ -43,6 +43,19 @@ export function AuctionDetail() {
 
   const handleBid = async () => {
     setError('');
+
+    const amount = parseFloat(bidAmount);
+
+    if (isNaN(amount) || amount <= 0) {
+      setError('Ange ett giltigt belopp.');
+      return;
+    }
+
+    if (amount <= currentPrice) {
+      setError(`Budet måste vara högre än ${currentPrice} kr.`);
+      return;
+    }
+
     const response = await fetch(
       `https://localhost:7211/api/auctions/${id}/bids`,
       {
@@ -63,8 +76,17 @@ export function AuctionDetail() {
       );
       setBidAmount('');
     } else {
-      const msg = await response.text();
-      setError(msg);
+      try {
+        const data = await response.json();
+        if (data.errors) {
+          setError('Ange ett giltigt belopp.');
+        } else {
+          setError(data.title || 'Något gick fel.');
+        }
+      } catch {
+        const msg = await response.text();
+        setError(msg);
+      }
     }
   };
 
@@ -164,7 +186,12 @@ export function AuctionDetail() {
               type="number"
               placeholder={`Minst ${currentPrice + 1} kr`}
               value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val == '' || /^\d+$/.test(val)) setBidAmount(val);
+              }}
+              min={currentPrice + 1}
+              step="1"
             />
             {error && <p className="error-message">{error}</p>}
             <Button
