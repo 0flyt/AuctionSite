@@ -1,6 +1,6 @@
 ﻿namespace AuctionSite.Api.Data;
 
-using AuctionSite.Api.Core.Models;
+using AuctionSite.Api.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 

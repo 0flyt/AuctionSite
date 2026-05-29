@@ -1,4 +1,4 @@
-﻿namespace AuctionSite.Api.Core.Models;
+﻿namespace AuctionSite.Api.Data.Entities;
 public class Admin
 {
     public int Id { get; set; }

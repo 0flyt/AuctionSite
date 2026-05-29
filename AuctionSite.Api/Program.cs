@@ -1,4 +1,8 @@
+using AuctionSite.Api.Core.Interfaces;
+using AuctionSite.Api.Core.Services;
 using AuctionSite.Api.Data;
+using AuctionSite.Api.Data.Interfaces;
+using AuctionSite.Api.Data.Repos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAdminRepo, AdminRepo>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuctionRepo, AuctionRepo>();
+builder.Services.AddScoped<IAuctionService, AuctionService>();
+builder.Services.AddScoped<IBidRepo, BidRepo>();
+builder.Services.AddScoped<IBidService, BidService>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

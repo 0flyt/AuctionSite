@@ -1,83 +1,35 @@
 ﻿using AuctionSite.Api.Core.DTOs.Auction;
-using AuctionSite.Api.Core.Models;
-using AuctionSite.Api.Data;
+using AuctionSite.Api.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace AuctionSite.Api.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class AuctionsController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    
-    public AuctionsController(AppDbContext context)
+    private readonly IAuctionService _service;
+
+    public AuctionsController(IAuctionService service)
     {
-        _context = context;
+        _service = service;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAuctions([FromQuery] string? title, [FromQuery] bool closed = false)
     {
-        var query = _context.Auctions
-            .Include(a => a.User)
-            .Include(a => a.Bids)
-            .Where(a => a.IsActive);
-
-        if (closed)
-            query = query.Where(a => a.EndDate <= DateTime.UtcNow);
-        else
-            query = query.Where(a => a.EndDate > DateTime.UtcNow);
-
-        if (!string.IsNullOrEmpty(title)) query = query.Where(a => a.Title.Contains(title));
-
-        var auctions = await query.Select(a => new AuctionResponseDto
-        {
-            Id = a.Id,
-            Title = a.Title,
-            Description = a.Description,
-            StartingPrice = a.StartingPrice,
-            StartDate = a.StartDate,
-            EndDate = a.EndDate,
-            IsActive = a.IsActive,
-            UserId = a.UserId,
-            Username = a.User.Username,
-            HighestBid = a.Bids.Any() ? a.Bids.Max(b => b.Amount) : (decimal?)null,
-            ImageUrl = a.ImageUrl
-
-        }).ToListAsync();
-
+        var auctions = await _service.GetAuctionsAsync(title, closed);
         return Ok(auctions);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAuction(int id)
     {
-        var auction = await _context.Auctions
-            .Include(a => a.User)
-            .Include(a => a.Bids)
-            .FirstOrDefaultAsync(a => a.Id == id);
-
+        var auction = await _service.GetAuctionByIdAsync(id);
         if (auction == null) return NotFound();
-
-        return Ok(new AuctionResponseDto
-        {
-            Id = auction.Id,
-            Title = auction.Title,
-            Description = auction.Description,
-            StartingPrice = auction.StartingPrice,
-            StartDate = auction.StartDate,
-            EndDate = auction.EndDate,
-            IsActive = auction.IsActive,
-            UserId = auction.UserId,
-            Username = auction.User.Username,
-            HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : (decimal?)null,
-            ImageUrl = auction.ImageUrl
-        });
+        return Ok(auction);
     }
 
     [HttpPost]
@@ -85,49 +37,8 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> CreateAuction(CreateAuctionDto dto)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-        var auction = new Auction
-        {
-            Title = dto.Title,
-            Description = dto.Description,
-            StartingPrice = dto.StartingPrice,
-            StartDate = DateTime.UtcNow,
-            EndDate = dto.EndDate.ToUniversalTime(),
-            UserId = userId
-        };
-
-        _context.Auctions.Add(auction);
-        await _context.SaveChangesAsync();
-
-        var user = await _context.Users.FindAsync(userId);
-
-        return Ok(new AuctionResponseDto
-        {
-            Id = auction.Id,
-            Title = auction.Title,
-            Description = auction.Description,
-            StartingPrice = auction.StartingPrice,
-            StartDate = auction.StartDate,
-            EndDate = auction.EndDate,
-            IsActive = auction.IsActive,
-            UserId = auction.UserId,
-            Username = user?.Username ?? ""
-        });
-    }
-
-    [HttpPatch("{id}/deactivate")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeactivateAuction(int id)
-    {
-        var auction = await _context.Auctions.FindAsync(id);
-
-        if (auction == null) return NotFound();
-
-        auction.IsActive = !auction.IsActive;
-
-        await _context.SaveChangesAsync();
-
-        return Ok(new { isActive = auction.IsActive });
+        var auction = await _service.CreateAuctionAsync(dto, userId);
+        return Ok(auction);
     }
 
     [HttpPut("{id}")]
@@ -135,65 +46,27 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> UpdateAuction(int id, UpdateAuctionDto dto)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await _service.UpdateAuctionAsync(id, dto, userId);
+        if (result == null) return Forbid();
+        return Ok(result);
+    }
 
-        var auction = await _context.Auctions
-            .Include(a => a.Bids)
-            .FirstOrDefaultAsync(a => a.Id == id);
-
-        if (auction == null)
-            return NotFound();
-
-        if (auction.UserId != userId)
-            return Forbid();
-
-        auction.Title = dto.Title;
-        auction.Description = dto.Description;
-        auction.EndDate = dto.EndDate.ToUniversalTime();
-
-        if (!auction.Bids.Any())
-            auction.StartingPrice = dto.StartingPrice;
-
-        await _context.SaveChangesAsync();
-
-        return Ok(new AuctionResponseDto
-        {
-            Id = auction.Id,
-            Title = auction.Title,
-            Description = auction.Description,
-            StartingPrice = auction.StartingPrice,
-            StartDate = auction.StartDate,
-            EndDate = auction.EndDate,
-            IsActive = auction.IsActive,
-            UserId = auction.UserId,
-            Username = (await _context.Users.FindAsync(userId))!.Username,
-            HighestBid = auction.Bids.Any() ? auction.Bids.Max(b => b.Amount) : null
-        });
+    [HttpPatch("{id}/deactivate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeactivateAuction(int id)
+    {
+        var result = await _service.DeactivateAuctionAsync(id);
+        if (!result) return NotFound();
+        return Ok();
     }
 
     [HttpPost("{id}/image")]
     [Authorize]
-    public async Task<IActionResult> UploadImage(int id, IFormFile image)
+    public async Task<IActionResult> UploadImage(int id, IFormFile file)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var auction = await _context.Auctions.FindAsync(id);
-
-        if (auction == null) return NotFound();
-        if (auction.UserId != userId) return Forbid();
-
-        var uploadsFolder = Path.Combine("wwwroot", "images");
-        Directory.CreateDirectory(uploadsFolder);
-
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await image.CopyToAsync(stream);
-        }
-
-        auction.ImageUrl = $"/images/{fileName}";
-        await _context.SaveChangesAsync();
-
-        return Ok(new { imageUrl = auction.ImageUrl });
+        var imageUrl = await _service.UploadImageAsync(id, file, userId);
+        if (imageUrl == null) return Forbid();
+        return Ok(new { imageUrl });
     }
 }
